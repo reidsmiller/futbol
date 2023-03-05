@@ -46,11 +46,11 @@ RSpec.describe TeamStats do
     expect(@stat_tracker.fewest_goals_scored("18")).to eq 0
   end
 
-  xit "#favorite_opponent" do
+  it "#favorite_opponent" do
     expect(@stat_tracker.favorite_opponent("18")).to eq "DC United"
   end
 
-  xit "#rival" do
+  it "#rival" do
     expect(@stat_tracker.rival("18")).to eq("Houston Dash").or(eq("LA Galaxy"))
   end
 end
