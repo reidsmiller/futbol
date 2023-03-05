@@ -38,4 +38,9 @@ module TeamStats
     team_group = game_teams.select {|game_team| game_team.team_id == input_team_id}
     percent_win_loss(team_group).round(2)
   end
+
+  def most_goals_scored(input_team_id)
+    team_group = game_teams.select {|game_team| game_team.team_id == input_team_id}
+    highest_score = team_group.max_by(&:goals).goals
+  end
 end
