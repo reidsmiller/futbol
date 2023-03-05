@@ -33,4 +33,9 @@ module TeamStats
     end
     bestest_season = team_season_percent.min_by {|_, value| value}[0]
   end
+
+  def average_win_percentage(input_team_id)
+    team_group = game_teams.select {|game_team| game_team.team_id == input_team_id}
+    percent_win_loss(team_group).round(2)
+  end
 end
