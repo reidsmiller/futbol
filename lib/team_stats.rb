@@ -76,4 +76,26 @@ module TeamStats
     end
     opponent_most_won_against = opponent_game_percent_win.max_by{|_, value| value}.first
   end
+
+  def biggest_team_blowout(input_team_id)
+    wins = get_wins(input_team_id)
+    wins.map do |game|
+      if game.away_team_id == input_team_id
+        game.away_goals - game.home_goals
+      elsif game.home_team_id == input_team_id
+        game.home_goals - game.away_goals
+      end
+    end.max
+  end
+
+  def worst_loss(input_team_id)
+    losses = get_losses(input_team_id)
+    losses.map do |game|
+      if game.away_team_id == input_team_id
+        game.home_goals - game.away_goals
+      elsif game.home_team_id == input_team_id
+        game.away_goals - game.home_goals
+      end
+    end.max
+  end
 end
