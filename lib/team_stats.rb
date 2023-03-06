@@ -98,4 +98,25 @@ module TeamStats
       end
     end.max
   end
+
+  def seasonal_summary(input_team_id)
+    team_group = @games.select {|game| game.away_team_id == input_team_id || game.home_team_id == input_team_id}
+    team_seasons = team_group.group_by(&:season)
+    team_games = {}
+    team_seasons.each do |season, values|
+      team_games[season] = values.group_by(&:type)
+    end
+    team_games.each do |_, values|
+      values.each do |type, data|
+        values[type] = {
+          win_percentage: summary_win_percent(input_team_id, data),
+          total_goals_scored: summary_total_goals_scored(input_team_id, data),
+          total_goals_against: summary_total_goals_against(input_team_id, data),
+          average_goals_scored: summary_ave_goals_scored(input_team_id, data),
+          average_goals_against: summary_ave_goals_against(input_team_id, data)
+        }
+      end
+    end
+    team_games
+  end
 end

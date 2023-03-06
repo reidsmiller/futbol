@@ -34,7 +34,6 @@ module Helper
 
   def percent_win_loss(input_games)
     count_wins = input_games.count {|game_team| game_team.result == "WIN"}
-    count_ties = input_games.count {|game_team| game_team.result == "TIE"}
     count_wins.fdiv(input_games.length)
   end
 
@@ -62,9 +61,56 @@ module Helper
     game.home_team_id == id && game.home_goals < game.away_goals
   end
 
-  def percent_win_loss(input_games)
-    count_wins = input_games.count {|game_team| game_team.result == "WIN"}
-    count_ties = input_games.count {|game_team| game_team.result == "TIE"}
-    count_wins.fdiv(input_games.length)
+  def summary_win_percent(input_team_id, data)
+    wins = data.select {|game| away_win?(game, input_team_id) || home_win?(game, input_team_id)}.count
+    wins.fdiv(data.length).round(2)
+  end
+
+  def summary_total_goals_scored(input_team_id, data)
+    count = 0
+    data.each do |game|
+      if game.away_team_id == input_team_id
+        count += game.away_goals
+      elsif game.home_team_id == input_team_id
+        count += game.home_goals
+      end
+    end
+    count
+  end
+
+  def summary_total_goals_against(input_team_id, data)
+    count = 0
+    data.each do |game|
+      if game.away_team_id == input_team_id
+        count += game.home_goals
+      elsif game.home_team_id == input_team_id
+        count += game.away_goals
+      end
+    end
+    count
+  end
+
+  def summary_ave_goals_scored(input_team_id, data)
+    scores = []
+    data.each do |game|
+      if game.away_team_id == input_team_id
+        scores << game.away_goals
+      elsif game.home_team_id == input_team_id
+        scores << game.home_goals
+      end
+    end
+    scores.sum.fdiv(scores.length).round(2)
+  end
+
+  def summary_ave_goals_against(input_team_id, data)
+    scores = []
+    data.each do |game|
+      if game.away_team_id == input_team_id
+        scores << game.home_goals
+      elsif game.home_team_id == input_team_id
+        scores << game.away_goals
+      end
+    end
+    scores.sum.fdiv(scores.length).round(2)
   end
 end
