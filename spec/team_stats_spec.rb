@@ -41,4 +41,10 @@ RSpec.describe TeamStats do
   it '#worst_loss' do
     expect(@stat_tracker.worst_loss("18")).to eq(4)
   end
+
+  it '#head_to_head' do
+    expect(@stat_tracker.head_to_head("18")).to be_a Hash
+    expect(@stat_tracker.head_to_head("18")['Atlanta United']).to eq(0.5)
+    expect(@stat_tracker.head_to_head("18")['Chicago Fire']).to eq(0.3)
+  end
 end
