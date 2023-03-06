@@ -32,9 +32,24 @@ module Helper
     (sum_goals.fdiv(sum_shots)*100).round(2)
   end
 
+  def get_all_opponent_games(input_team_id)
+    select_team_games = @game_teams.select {|game_team| game_team.team_id == input_team_id}
+    select_opponent_games = []
+    select_team_games.each do |team_game|
+      select_opponent_games << @game_teams.select {|game_team| game_team.game_id == team_game.game_id && game_team.team_id != team_game.team_id}
+    end
+    select_opponent_games
+  end
+
   def percent_win_loss(input_games)
     count_wins = input_games.count {|game_team| game_team.result == "WIN"}
     count_wins.fdiv(input_games.length)
+  end
+
+  def percent_win_for_input_team(input_games)
+    total_games = input_games.length
+    opponent_losses = input_games.count {|game_team| game_team.result == "LOSS"}
+    opponent_losses.fdiv(total_games)
   end
 
   def get_wins(id)

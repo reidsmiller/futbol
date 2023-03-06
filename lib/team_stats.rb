@@ -15,23 +15,25 @@ module TeamStats
   end
 
   def best_season(input_team_id)
-    team_group = @game_teams.select {|game_team| game_team.team_id == input_team_id}
-    team_seasons = team_group.group_by(&:season)
-    team_season_percent = {}
-    team_seasons.each do |season, values|
-      team_season_percent[season] = percent_win_loss(values)
+    seasons_win_percentages = Hash.new(0)
+    team_games = @game_teams.select {|game_team| game_team.team_id == input_team_id}
+    seasonal_games = team_games.group_by(&:season)
+    seasonal_games.map do |season, games|  
+      seasons_win_percentages[season] = percent_win_loss(games)
     end
-    bestest_season = team_season_percent.max_by {|_, value| value}[0]
+    good_times = seasons_win_percentages.max_by{|_, value| value}
+    good_times[0]
   end
 
   def worst_season(input_team_id)
-    team_group = @game_teams.select {|game_team| game_team.team_id == input_team_id}
-    team_seasons = team_group.group_by(&:season)
-    team_season_percent = {}
-    team_seasons.each do |season, values|
-      team_season_percent[season] = percent_win_loss(values)
+    seasons_win_percentages = Hash.new(0)
+    team_games = @game_teams.select {|game_team| game_team.team_id == input_team_id}
+    seasonal_games = team_games.group_by(&:season)
+    seasonal_games.map do |season, games|  
+      seasons_win_percentages[season] = percent_win_loss(games)
     end
-    bestest_season = team_season_percent.min_by {|_, value| value}[0]
+    bad_times = seasons_win_percentages.min_by{|_, value| value}
+    bad_times[0]
   end
 
   def average_win_percentage(input_team_id)
@@ -50,12 +52,7 @@ module TeamStats
   end
 
   def favorite_opponent(input_team_id)
-    select_team_games = @game_teams.select {|game_team| game_team.team_id == input_team_id}
-    select_opponent_games = []
-    select_team_games.each do |team_game|
-      select_opponent_games << @game_teams.select {|game_team| game_team.game_id == team_game.game_id && game_team.team_id != team_game.team_id}
-    end
-    opponent_game_grouped = select_opponent_games.flatten.group_by(&:team_name)
+    opponent_game_grouped = get_all_opponent_games(input_team_id).flatten.group_by(&:team_name)
     opponent_game_percent_win = {}
     opponent_game_grouped.each do |team_name, values| 
       opponent_game_percent_win[team_name] = percent_win_loss(values)
@@ -64,12 +61,7 @@ module TeamStats
   end
 
   def rival(input_team_id)
-    select_team_games = @game_teams.select {|game_team| game_team.team_id == input_team_id}
-    select_opponent_games = []
-    select_team_games.each do |team_game|
-      select_opponent_games << @game_teams.select {|game_team| game_team.game_id == team_game.game_id && game_team.team_id != team_game.team_id}
-    end
-    opponent_game_grouped = select_opponent_games.flatten.group_by(&:team_name)
+    opponent_game_grouped = get_all_opponent_games(input_team_id).flatten.group_by(&:team_name)
     opponent_game_percent_win = {}
     opponent_game_grouped.each do |team_name, values| 
       opponent_game_percent_win[team_name] = percent_win_loss(values)
@@ -97,6 +89,15 @@ module TeamStats
         game.away_goals - game.home_goals
       end
     end.max
+  end
+
+  def head_to_head(input_team_id)
+    games_by_opponent = get_all_opponent_games(input_team_id).flatten.group_by(&:team_name)
+    record = {}
+    games_by_opponent.each do |team_name, values|
+      record[team_name] = percent_win_for_input_team(values).round(2)
+    end
+    record
   end
 
   def seasonal_summary(input_team_id)
