@@ -30,6 +30,10 @@ RSpec.describe TeamStats do
     expect(@stat_tracker.best_season("6")).to eq "20132014"
   end
 
+  it '#worst_season' do
+    expect(@stat_tracker.worst_season("6")).to eq "20142015"
+  end
+
   it "#favorite_opponent" do
     expect(@stat_tracker.favorite_opponent("18")).to eq "DC United"
   end
